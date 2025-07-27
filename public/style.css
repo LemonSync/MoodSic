@@ -1,188 +1,249 @@
 /* Base Styles */
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f5f7fa;
+  background-color: #121212;
   margin: 0;
-  padding: 20px;
+  padding: 0;
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  color: #2c3e50;
+  color: #ffffff;
 }
 
 .container {
-  background-color: white;
+  background-color: #181818;
   border-radius: 12px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-  padding: 2rem;
-  width: 100%;
-  max-width: 600px;
+  width: 380px;
+  max-width: 100%;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
 }
 
 /* Weather Display */
 .weather-display {
-  background-color: #e8f4fc;
-  border-radius: 10px;
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
-}
-
-.weather-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
+  padding: 24px;
+  background: linear-gradient(135deg, #1db954 0%, #1e3c72 100%);
+  color: white;
+  text-align: center;
 }
 
 .weather-location {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #2c3e50;
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 8px;
 }
 
 .weather-condition {
-  font-size: 1.2rem;
-  font-weight: 500;
+  font-size: 16px;
+  opacity: 0.8;
+  margin-bottom: 16px;
 }
 
 .weather-details {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
-  margin-top: 1rem;
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20px;
 }
 
 .weather-detail {
-  background-color: white;
-  padding: 0.8rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  text-align: center;
 }
 
 .detail-label {
-  font-size: 0.9rem;
-  color: #7f8c8d;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0.7;
+  margin-bottom: 4px;
 }
 
 .detail-value {
-  font-size: 1.2rem;
-  font-weight: bold;
-  margin-top: 0.3rem;
+  font-size: 20px;
+  font-weight: 600;
 }
 
-/* Player Controls */
+/* Player Container */
 .player-container {
-  margin-top: 1.5rem;
+  padding: 24px;
+  background-color: #282828;
 }
 
-.player-controls {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-  margin-top: 1rem;
-}
-
-.control-btn {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  background-color: #3498db;
-  color: white;
-  border: none;
+.album-art {
+  width: 250px;
+  height: 250px;
+  margin: 0 auto 24px;
+  background-color: #333;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s;
 }
 
-.control-btn:hover {
-  background-color: #2980b9;
-  transform: scale(1.05);
+.album-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-.control-btn i {
-  font-size: 1.2rem;
+.album-art .weather-icon {
+  font-size: 80px;
 }
 
-#play-pause-btn {
-  width: 60px;
-  height: 60px;
-  background-color: #2ecc71;
-}
-
-#play-pause-btn:hover {
-  background-color: #27ae60;
-}
-
-#now-playing {
-  margin-top: 1.5rem;
+.song-info {
   text-align: center;
-  font-size: 1.1rem;
+  margin-bottom: 24px;
 }
 
 .song-title {
-  font-weight: bold;
-  color: #2c3e50;
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 4px;
 }
 
+.song-artist {
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+/* Progress Bar */
+.progress-container {
+  margin-bottom: 24px;
+}
+
+.progress-bar {
+  height: 4px;
+  width: 100%;
+  background-color: #535353;
+  border-radius: 2px;
+  margin-bottom: 8px;
+  cursor: pointer;
+}
+
+.progress {
+  height: 100%;
+  background-color: #1db954;
+  border-radius: 2px;
+  width: 0%;
+}
+
+.time-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+/* Player Controls */
+.player-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 16px;
+}
+
+.control-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  opacity: 0.8;
+  transition: all 0.2s;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.control-btn:hover {
+  opacity: 1;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+#play-pause-btn {
+  background-color: white;
+  color: black;
+  width: 50px;
+  height: 50px;
+  opacity: 1;
+}
+
+#play-pause-btn:hover {
+  transform: scale(1.05);
+}
+
+/* Weather Type Badge */
 .weather-type {
   display: inline-block;
-  padding: 0.3rem 0.8rem;
+  padding: 4px 12px;
   border-radius: 20px;
-  font-size: 0.9rem;
-  margin-left: 0.5rem;
-  background-color: #bdc3c7;
-  color: #2c3e50;
+  font-size: 12px;
+  background-color: rgba(0, 0, 0, 0.3);
+  margin-top: 8px;
 }
 
-/* Audio Element */
-audio {
-  width: 100%;
-  margin-top: 1rem;
-}
-
-/* Error Messages */
-.error-message {
-  color: #e74c3c;
-  background-color: #fdecea;
-  padding: 1rem;
-  border-radius: 8px;
-  margin-bottom: 1rem;
-  text-align: center;
-}
-
-/* Manual Selection */
+/* Manual Select */
 .manual-select {
-  margin-top: 1.5rem;
+  padding: 16px 24px;
+  background-color: #181818;
+  border-top: 1px solid #282828;
   text-align: center;
 }
 
-select {
-  padding: 0.7rem;
-  border: 2px solid #dfe6e9;
-  border-radius: 8px;
-  margin-right: 0.5rem;
+.manual-select p {
+  margin-bottom: 12px;
+  opacity: 0.7;
+}
+
+#weather-select {
+  background-color: #333;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  margin-right: 8px;
+}
+
+#manual-submit {
+  background-color: #1db954;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+#manual-submit:hover {
+  background-color: #1ed760;
+}
+
+/* Error Message */
+.error-message {
+  background-color: #e22134;
+  color: white;
+  padding: 12px 24px;
+  text-align: center;
+  font-size: 14px;
 }
 
 /* Responsive */
 @media (max-width: 480px) {
   .container {
-    padding: 1.2rem;
+    width: 100%;
+    border-radius: 0;
+    min-height: 100vh;
   }
   
-  .weather-details {
-    grid-template-columns: 1fr;
-  }
-  
-  .control-btn {
-    width: 45px;
-    height: 45px;
-  }
-  
-  #play-pause-btn {
-    width: 55px;
-    height: 55px;
+  .album-art {
+    width: 200px;
+    height: 200px;
   }
 }

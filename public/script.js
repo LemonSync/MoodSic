@@ -1,177 +1,210 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const weatherInfo = document.getElementById('weather-info');
-    const musicPlayer = document.getElementById('music-player');
-    const nowPlaying = document.getElementById('now-playing');
-    const playerContainer = document.getElementById('player-container');
-    
-    // Create play button (new element)
-    const playButton = document.createElement('button');
-    playButton.textContent = 'Start Music';
-    playButton.id = 'play-button';
-    playerContainer.insertBefore(playButton, playerContainer.firstChild);
-    
-    // Create next button
-    const nextButton = document.createElement('button');
-    nextButton.textContent = 'Next Song';
-    nextButton.id = 'next-button';
-    nextButton.disabled = true;
-    playerContainer.insertBefore(nextButton, playButton.nextSibling);
-    
-    // API Key OpenWeatherMap
-    const API_KEY = '267cf21554b098b03a55b035485b7dc6';
-    
-    // Global state variables
-    let currentWeatherType = '';
-    let currentSongs = [];
-    let currentSongIndex = 0;
-    let userInteracted = false;
-    
-    // Event listeners
-    playButton.addEventListener('click', initPlayer);
-    nextButton.addEventListener('click', playNextSong);
-    
-    // Initialize player after user interaction
-    function initPlayer() {
-        userInteracted = true;
-        playButton.disabled = true;
-        nextButton.disabled = false;
-        
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                fetchWeatherAndMusic,
-                handleLocationError,
-                { timeout: 10000 }
-            );
-        } else {
-            showError('Geolocation is not supported by your browser.');
+  // DOM Elements
+  const weatherDisplay = document.createElement('div');
+  weatherDisplay.className = 'weather-display';
+  weatherDisplay.innerHTML = `
+    <div class="weather-header">
+      <div class="weather-location">Mendeteksi lokasi...</div>
+      <span class="weather-type">-</span>
+    </div>
+    <div class="weather-details">
+      <div class="weather-detail">
+        <div class="detail-label">Suhu</div>
+        <div class="detail-value" id="temperature">-</div>
+      </div>
+      <div class="weather-detail">
+        <div class="detail-label">Terasa</div>
+        <div class="detail-value" id="feels-like">-</div>
+      </div>
+      <div class="weather-detail">
+        <div class="detail-label">Kondisi</div>
+        <div class="detail-value" id="weather-condition">-</div>
+      </div>
+      <div class="weather-detail">
+        <div class="detail-label">Kelembaban</div>
+        <div class="detail-value" id="humidity">-</div>
+      </div>
+    </div>
+  `;
+
+  const playerContainer = document.createElement('div');
+  playerContainer.className = 'player-container';
+  playerContainer.innerHTML = `
+    <audio id="audio-player"></audio>
+    <div class="player-controls">
+      <button class="control-btn" id="prev-btn" title="Previous">
+        <i>⏮</i>
+      </button>
+      <button class="control-btn" id="play-pause-btn" title="Play/Pause">
+        <i>▶️</i>
+      </button>
+      <button class="control-btn" id="next-btn" title="Next">
+        <i>⏭</i>
+      </button>
+    </div>
+    <div id="now-playing">
+      <span class="song-title">-</span>
+    </div>
+  `;
+
+  const manualSelect = document.createElement('div');
+  manualSelect.className = 'manual-select';
+
+  document.querySelector('.container').append(weatherDisplay, playerContainer, manualSelect);
+
+  // Player elements
+  const audioPlayer = document.getElementById('audio-player');
+  const playPauseBtn = document.getElementById('play-pause-btn');
+  const prevBtn = document.getElementById('prev-btn');
+  const nextBtn = document.getElementById('next-btn');
+  const nowPlaying = document.querySelector('.song-title');
+  const weatherType = document.querySelector('.weather-type');
+
+  // State
+  let currentSongs = [];
+  let currentSongIndex = 0;
+  let isPlaying = false;
+
+  // Initialize
+  initPlayer();
+
+  function initPlayer() {
+    // Try geolocation first
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        position => {
+          const { latitude, longitude } = position.coords;
+          fetchWeatherAndMusic(latitude, longitude);
+        },
+        error => {
+          console.error('Geolocation error:', error);
+          showManualSelect();
         }
+      );
+    } else {
+      showManualSelect();
     }
-    
-    async function fetchWeatherAndMusic(position) {
-        const { latitude, longitude } = position.coords;
-        
-        try {
-            const weatherData = await getWeatherData(latitude, longitude);
-            displayWeatherInfo(weatherData);
-            
-            const musicResponse = await sendWeatherToBackend(weatherData);
-            
-            if (musicResponse?.success) {
-                currentWeatherType = musicResponse.weatherType;
-                currentSongs = musicResponse.songs;
-                currentSongIndex = 0;
-                
-                playCurrentSong();
-            } else {
-                showError('Failed to load music. Please try again.');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            showError('Failed to get weather data. Please refresh and try again.');
-        }
+
+    // Setup event listeners
+    playPauseBtn.addEventListener('click', togglePlayPause);
+    prevBtn.addEventListener('click', playPrevious);
+    nextBtn.addEventListener('click', playNext);
+    audioPlayer.addEventListener('ended', playNext);
+  }
+
+  async function fetchWeatherAndMusic(lat, lon) {
+    try {
+      const response = await fetch('/get-weather-music', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ latitude: lat, longitude: lon })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        updateWeatherDisplay(data.weatherData);
+        currentSongs = data.songs;
+        currentSongIndex = 0;
+        loadCurrentSong();
+      } else {
+        throw new Error('Failed to get weather data');
+      }
+    } catch (error) {
+      console.error('Fetch error:', error);
+      showError('Gagal memuat data cuaca');
+      showManualSelect();
     }
-    
-    function handleLocationError(error) {
-        console.error('Location error:', error);
-        let message = 'Error getting location: ';
-        
-        switch(error.code) {
-            case error.PERMISSION_DENIED:
-                message += 'Location permission denied.';
-                break;
-            case error.POSITION_UNAVAILABLE:
-                message += 'Location information unavailable.';
-                break;
-            case error.TIMEOUT:
-                message += 'Location request timed out.';
-                break;
-            default:
-                message += 'Unknown error occurred.';
-        }
-        
-        showError(message);
+  }
+
+  function updateWeatherDisplay(weather) {
+    document.querySelector('.weather-location').textContent = weather.location;
+    document.getElementById('temperature').textContent = `${weather.temperature}°C`;
+    document.getElementById('feels-like').textContent = `${weather.feelsLike}°C`;
+    document.getElementById('weather-condition').textContent = weather.condition;
+    document.getElementById('humidity').textContent = `${weather.humidity}%`;
+  }
+
+  function loadCurrentSong() {
+    if (currentSongs.length === 0) return;
+
+    const song = currentSongs[currentSongIndex];
+    audioPlayer.src = song.path;
+    nowPlaying.textContent = song.name;
+    weatherType.textContent = getWeatherTypeName(song.path.split('/')[2]);
+
+    // Auto-play if user has interacted before
+    if (isPlaying) {
+      audioPlayer.play().catch(e => console.error('Play error:', e));
     }
-    
-    async function getWeatherData(lat, lon) {
-        const response = await fetch(
-            `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`
-        );
-        if (!response.ok) throw new Error('Weather API request failed');
-        return await response.json();
+  }
+
+  function getWeatherTypeName(type) {
+    const names = {
+      sunny: '☀️ Cerah',
+      rainy: '🌧️ Hujan',
+      cloudy: '☁️ Berawan',
+      cold: '❄️ Dingin',
+      neutral: '🎵 Netral'
+    };
+    return names[type] || type;
+  }
+
+  function togglePlayPause() {
+    if (currentSongs.length === 0) return;
+
+    if (isPlaying) {
+      audioPlayer.pause();
+      playPauseBtn.innerHTML = '<i>▶️</i>';
+    } else {
+      audioPlayer.play()
+        .then(() => {
+          playPauseBtn.innerHTML = '<i>⏸</i>';
+        })
+        .catch(e => {
+          console.error('Play error:', e);
+          showError('Gagal memutar musik');
+        });
     }
+    isPlaying = !isPlaying;
+  }
+
+  function playNext() {
+    if (currentSongs.length === 0) return;
     
-    function displayWeatherInfo(data) {
-        const weather = data.weather[0];
-        const main = data.main;
-        
-        weatherInfo.innerHTML = `
-            <h3>Weather in ${data.name}</h3>
-            <p><strong>Condition:</strong> ${weather.main} (${weather.description})</p>
-            <p><strong>Temperature:</strong> ${main.temp}°C</p>
-        `;
+    currentSongIndex = (currentSongIndex + 1) % currentSongs.length;
+    loadCurrentSong();
+    
+    if (isPlaying) {
+      audioPlayer.play().catch(e => console.error('Play error:', e));
     }
+  }
+
+  function playPrevious() {
+    if (currentSongs.length === 0) return;
     
-    async function sendWeatherToBackend(weatherData) {
-        try {
-            const response = await fetch('/get-music', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    weather: weatherData.weather[0].main,
-                    temperature: weatherData.main.temp
-                })
-            });
-            if (!response.ok) throw new Error('Backend request failed');
-            return await response.json();
-        } catch (error) {
-            console.error('Error sending to backend:', error);
-            return null;
-        }
+    currentSongIndex = (currentSongIndex - 1 + currentSongs.length) % currentSongs.length;
+    loadCurrentSong();
+    
+    if (isPlaying) {
+      audioPlayer.play().catch(e => console.error('Play error:', e));
     }
+  }
+
+  function showManualSelect() {
+    document.querySelector('.manual-select').style.display = 'block';
+  }
+
+  function showError(message) {
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'error-message';
+    errorDiv.textContent = message;
+    document.querySelector('.container').prepend(errorDiv);
     
-    function playCurrentSong() {
-        if (currentSongs.length === 0) {
-            showError('No songs available for current weather');
-            return;
-        }
-        
-        const song = currentSongs[currentSongIndex];
-        musicPlayer.src = song.path;
-        nowPlaying.textContent = `Now playing: ${song.name} (${currentWeatherType})`;
-        
-        // Only play if user has interacted
-        if (userInteracted) {
-            const playPromise = musicPlayer.play();
-            
-            if (playPromise !== undefined) {
-                playPromise.catch(e => {
-                    console.error('Playback failed:', e);
-                    showError('Failed to play music. Click Next Song to try another track.');
-                });
-            }
-        }
-    }
-    
-    function playNextSong() {
-        if (currentSongs.length === 0) return;
-        
-        currentSongIndex = (currentSongIndex + 1) % currentSongs.length;
-        playCurrentSong();
-    }
-    
-    function showError(message) {
-        weatherInfo.innerHTML = `<p class="error">${message}</p>`;
-        playButton.disabled = false;
-    }
-    
-    // Auto-play next song when current ends
-    musicPlayer.addEventListener('ended', playNextSong);
-    
-    // Handle player errors
-    musicPlayer.addEventListener('error', () => {
-        showError('Error playing music. Trying next song...');
-        setTimeout(playNextSong, 2000);
-    });
+    setTimeout(() => {
+      errorDiv.remove();
+    }, 5000);
+  }
 });

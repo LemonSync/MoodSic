@@ -1,70 +1,4 @@
 document.addEventListener('DOMContentLoaded', function() {
-  // Create player structure
-  const playerHTML = `
-    <div class="weather-display">
-      <div class="weather-location">Mendeteksi lokasi...</div>
-      <div class="weather-condition">-</div>
-      <div class="weather-details">
-        <div class="weather-detail">
-          <div class="detail-label">Suhu</div>
-          <div class="detail-value" id="temperature">-</div>
-        </div>
-        <div class="weather-detail">
-          <div class="detail-label">Terasa</div>
-          <div class="detail-value" id="feels-like">-</div>
-        </div>
-        <div class="weather-detail">
-          <div class="detail-label">Kondisi</div>
-          <div class="detail-value" id="weather-condition">-</div>
-        </div>
-      </div>
-    </div>
-    <div class="player-container">
-      <div class="album-art" id="album-art">
-        <div class="weather-icon" id="weather-icon">⛅</div>
-      </div>
-      <div class="song-info">
-        <div class="song-title" id="song-title">-</div>
-        <div class="song-artist">Moodsic Player</div>
-        <div class="weather-type" id="weather-type">-</div>
-      </div>
-      <div class="progress-container">
-        <div class="progress-bar" id="progress-bar">
-          <div class="progress" id="progress"></div>
-        </div>
-        <div class="time-info">
-          <span id="current-time">0:00</span>
-          <span id="duration">0:00</span>
-        </div>
-      </div>
-      <div class="player-controls">
-        <button class="control-btn" id="prev-btn" title="Previous">
-          <i class="fas fa-step-backward"></i>
-        </button>
-        <button class="control-btn" id="play-pause-btn" title="Play">
-          <i class="fas fa-play" id="play-icon"></i>
-        </button>
-        <button class="control-btn" id="next-btn" title="Next">
-          <i class="fas fa-step-forward"></i>
-        </button>
-      </div>
-    </div>
-    <div class="manual-select" style="display: none;">
-      <p>Atau pilih cuaca manual:</p>
-      <select id="weather-select">
-        <option value="sunny">Cerah</option>
-        <option value="rainy">Hujan</option>
-        <option value="cloudy">Berawan</option>
-        <option value="cold">Dingin</option>
-        <option value="neutral">Netral</option>
-      </select>
-      <button id="manual-submit">Terapkan</button>
-    </div>
-  `;
-
-  document.querySelector('.container').innerHTML = playerHTML;
-
-  // Player elements
   const audioPlayer = new Audio();
   const playPauseBtn = document.getElementById('play-pause-btn');
   const playIcon = document.getElementById('play-icon');
@@ -78,6 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const weatherTypeEl = document.getElementById('weather-type');
   const weatherIconEl = document.getElementById('weather-icon');
   const albumArtEl = document.getElementById('album-art');
+  const songTypeSelect = document.getElementById('songType');
 
   // State
   let currentSongs = [];
@@ -96,12 +31,30 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Weather colors
   const weatherColors = {
-    sunny: '#ff9a3c',
-    rainy: '#3c6cff',
-    cloudy: '#7d7d7d',
-    cold: '#3cc3ff',
-    neutral: '#1db954'
-  };
+    sunny: '#FF9A3C',  // Vibrant orange
+    clear: '#FFCC33',  // Warm yellow (complement to sunny)
+    rainy: '#3C6CFF',  // Deep blue
+    drizzle: '#5D8BF4', // Lighter rain blue
+    shower: '#3CC3FF',  // Bright sky blue
+    cloudy: '#7D7D7D',  // Medium gray
+    overcast: '#B3B3B3', // Light gray
+    cold: '#3CC3FF',    // Ice blue
+    snow: '#FFFFFF',     // Pure white
+    sleet: '#B2EBF2',   // Light cyan
+    thunderstorm: '#4A148C', // Dark purple
+    lightning: '#7B1FA2',    // Electric purple
+    fog: '#9E9E9E',     // Soft gray
+    mist: '#E0E0E0',    // Off-white
+    haze: '#BDBDBD',    // Warm gray
+    dust: '#FFC107',    // Amber
+    sand: '#FFE082',    // Light amber
+    smoke: '#616161',   // Dark gray
+    ash: '#9E9E9E',     // Medium gray
+    tornado: '#D32F2F', // Danger red
+    squall: '#F44336',  // Bright red
+    freezing: '#00ACC1', // Deep cyan
+    neutral: '#1DB954'  // Spotify green (pleasant default)
+};
 
   // Initialize
   initPlayer();
@@ -173,22 +126,61 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Update background based on weather
     let bgColor1, bgColor2;
-    if (weatherType.includes('sun') || weatherType.includes('clear')) {
-      bgColor1 = '#ff9a3c';
-      bgColor2 = '#ffcc33';
-    } else if (weatherType.includes('rain')) {
-      bgColor1 = '#3c6cff';
-      bgColor2 = '#3cc3ff';
-    } else if (weatherType.includes('cloud')) {
-      bgColor1 = '#7d7d7d';
-      bgColor2 = '#b3b3b3';
-    } else if (weatherType.includes('cold') || weatherType.includes('snow')) {
-      bgColor1 = '#3cc3ff';
-      bgColor2 = '#ffffff';
-    } else {
-      bgColor1 = '#1db954';
-      bgColor2 = '#1ed760';
-    }
+    if (weatherType.includes('clear') || weatherType.includes('sun')) {
+  // Sunny/Clear
+  bgColor1 = '#FF9A3C'; // Vibrant orange
+  bgColor2 = '#FFCC33'; // Warm yellow
+} 
+else if (weatherType.includes('rain') || weatherType.includes('drizzle') || weatherType.includes('shower')) {
+  // Rain/Drizzle
+  bgColor1 = '#3C6CFF'; // Deep blue
+  bgColor2 = '#3CC3FF'; // Sky blue
+} 
+else if (weatherType.includes('thunder') || weatherType.includes('storm')) {
+  // Thunderstorm
+  bgColor1 = '#4A148C'; // Dark purple
+  bgColor2 = '#7B1FA2'; // Electric purple
+} 
+else if (weatherType.includes('snow') || weatherType.includes('flurr') || weatherType.includes('sleet')) {
+  // Snow/Sleet
+  bgColor1 = '#3CC3FF'; // Ice blue
+  bgColor2 = '#FFFFFF'; // Pure white
+} 
+else if (weatherType.includes('cloud') || weatherType.includes('overcast')) {
+  // Cloudy
+  bgColor1 = '#7D7D7D'; // Medium gray
+  bgColor2 = '#B3B3B3'; // Light gray
+} 
+else if (weatherType.includes('fog') || weatherType.includes('mist') || weatherType.includes('haze')) {
+  // Fog/Mist
+  bgColor1 = '#9E9E9E'; // Soft gray
+  bgColor2 = '#E0E0E0'; // Off-white
+} 
+else if (weatherType.includes('sand') || weatherType.includes('dust')) {
+  // Sand/Dust
+  bgColor1 = '#FFC107'; // Amber
+  bgColor2 = '#FFE082'; // Light amber
+} 
+else if (weatherType.includes('smoke') || weatherType.includes('ash')) {
+  // Smoke/Volcanic Ash
+  bgColor1 = '#616161'; // Dark gray
+  bgColor2 = '#9E9E9E'; // Medium gray
+} 
+else if (weatherType.includes('squall') || weatherType.includes('tornado')) {
+  // Extreme Weather
+  bgColor1 = '#D32F2F'; // Dark red
+  bgColor2 = '#F44336'; // Bright red
+} 
+else if (weatherType.includes('cold') || weatherType.includes('freez')) {
+  // Freezing Conditions
+  bgColor1 = '#00ACC1'; // Cyan
+  bgColor2 = '#B2EBF2'; // Light cyan
+} 
+else {
+  // Default (pleasant weather)
+  bgColor1 = '#1DB954'; // Spotify green
+  bgColor2 = '#1ED760'; // Brighter green
+}
     
     document.querySelector('.weather-display').style.background = 
       `linear-gradient(135deg, ${bgColor1} 0%, ${bgColor2} 100%)`;

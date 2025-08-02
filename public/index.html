@@ -9,7 +9,70 @@
 </head>
 <body>
   <div class="container">
-    <!-- Player will be inserted here by JavaScript -->
+    <div class="weather-display">
+    <select name="songType" id="songType">
+    <option value="normal">Recommended</option>
+    <option value="noLirik">No Lirik</option>
+    <option value="orchestra">Orchestra</option>
+    </select>
+      <div class="weather-location">Mendeteksi lokasi...</div>
+      <div class="weather-condition">-</div>
+      <div class="weather-details">
+        <div class="weather-detail">
+          <div class="detail-label">Suhu</div>
+          <div class="detail-value" id="temperature">-</div>
+        </div>
+        <div class="weather-detail">
+          <div class="detail-label">Terasa</div>
+          <div class="detail-value" id="feels-like">-</div>
+        </div>
+        <div class="weather-detail">
+          <div class="detail-label">Kondisi</div>
+          <div class="detail-value" id="weather-condition">-</div>
+        </div>
+      </div>
+    </div>
+    <div class="player-container">
+      <div class="album-art" id="album-art">
+        <div class="weather-icon" id="weather-icon">⛅</div>
+      </div>
+      <div class="song-info">
+        <div class="song-title" id="song-title">-</div>
+        <div class="song-artist">Moodsic Player</div>
+        <div class="weather-type" id="weather-type">-</div>
+      </div>
+      <div class="progress-container">
+        <div class="progress-bar" id="progress-bar">
+          <div class="progress" id="progress"></div>
+        </div>
+        <div class="time-info">
+          <span id="current-time">0:00</span>
+          <span id="duration">0:00</span>
+        </div>
+      </div>
+      <div class="player-controls">
+        <button class="control-btn" id="prev-btn" title="Previous">
+          <i class="fas fa-step-backward"></i>
+        </button>
+        <button class="control-btn" id="play-pause-btn" title="Play">
+          <i class="fas fa-play" id="play-icon"></i>
+        </button>
+        <button class="control-btn" id="next-btn" title="Next">
+          <i class="fas fa-step-forward"></i>
+        </button>
+      </div>
+    </div>
+    <div class="manual-select" style="display: none;">
+      <p>Atau pilih cuaca manual:</p>
+      <select id="weather-select">
+        <option value="sunny">Cerah</option>
+        <option value="rainy">Hujan</option>
+        <option value="cloudy">Berawan</option>
+        <option value="cold">Dingin</option>
+        <option value="neutral">Netral</option>
+      </select>
+      <button id="manual-submit">Terapkan</button>
+    </div>
   </div>
   <script src="script.js"></script>
 </body>

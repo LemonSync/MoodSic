@@ -35,7 +35,7 @@ app.use('/songs', express.static(SONGS_DIR, {
 // Weather and music endpoint
 app.post('/get-weather-music', async (req, res) => {
   try {
-    const { latitude, longitude, manualWeather } = req.body;
+    const { latitude, longitude, manualWeather, songType } = req.body;
     let weatherData;
 
     if (manualWeather) {
@@ -81,22 +81,21 @@ function determineWeatherType(weatherData) {
   const weather = weatherData.weather[0].main.toLowerCase();
   const temp = weatherData.main.temp;
 
-  
-  if (weather.includes('tornado') || weather.includes('hurricane')) return 'extreme';
-  if (weather.includes('thunder') || weather.includes('lightning')) return 'stormy';
-  if (weather.includes('squall')) return 'windy';
-  if (weather.includes('rain') || weather.includes('drizzle') || weather.includes('shower')) return 'rainy';
-  if (weather.includes('snow') || weather.includes('flurry') || weather.includes('sleet') || temp < 0) return 'snowy';
-  if (weather.includes('hail')) return 'hail';
-  if (weather.includes('fog') || weather.includes('mist')) return 'foggy';
-  if (weather.includes('haze') || weather.includes('smoke')) return 'hazy';
-  if (weather.includes('dust') || weather.includes('sand')) return 'dusty';
-  if (weather.includes('ash')) return 'ashy';
-  if (weather.includes('cloud') || weather.includes('overcast')) return 'cloudy';
-  if (weather.includes('clear') || weather.includes('sun') || temp > 25) return 'sunny';
-  if (temp < 10) return 'cold';
-  if (temp > 30) return 'hot';
-  return 'neutral';
+    if (weather.includes("tornado") || weather.includes("hurricane")) return "extreme";
+    if (weather.includes("thunder") || weather.includes("lightning")) return "stormy";
+    if (weather.includes("squall")) return "windy";
+    if (weather.includes("rain") || weather.includes("drizzle") || weather.includes("shower")) return "rainy";
+    if (weather.includes("snow") || weather.includes("flurry") || weather.includes("sleet")) return "snowy";
+    if (weather.includes("hail")) return "hail";
+    if (weather.includes("fog") || weather.includes("mist")) return "foggy";
+    if (weather.includes("haze") || weather.includes("smoke")) return "hazy";
+    if (weather.includes("dust") || weather.includes("sand")) return "dusty";
+    if (weather.includes("ash")) return "ashy";
+    if (weather.includes("cloud") || weather.includes("overcast")) return "cloudy";
+    if (weather.includes("clear") || weather.includes("sun")) return "sunny";
+    if (temp < 10) return "cold";
+    if (temp > 30) return "hot";
+    return "neutral";
 }
 
 function getSongsForWeather(weatherType) {

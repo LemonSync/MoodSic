@@ -14,13 +14,11 @@ document.addEventListener("DOMContentLoaded", function () {
   const albumArtEl = document.getElementById("album-art");
   const songTypeSelect = document.getElementById("songType");
 
-  // State
   let currentSongs = [];
   let currentSongIndex = 0;
   let isPlaying = false;
   let updateTimer;
 
-  // Weather icons
   const weatherIcons = {
     sunny: "☀️",
     rainy: "🌧️",
@@ -29,7 +27,6 @@ document.addEventListener("DOMContentLoaded", function () {
     neutral: "🎵",
   };
 
-  // Weather colors
   const weatherColors = {
     sunny: "#FF9A3C", // Vibrant orange
     clear: "#FFCC33", // Warm yellow (complement to sunny)
@@ -53,14 +50,12 @@ document.addEventListener("DOMContentLoaded", function () {
     tornado: "#D32F2F", // Danger red
     squall: "#F44336", // Bright red
     freezing: "#00ACC1", // Deep cyan
-    neutral: "#1DB954", // Spotify green (pleasant default)
+    neutral: "#1DB954", // Spotify green (warna default)
   };
 
-  // Initialize
   initPlayer();
 
   function initPlayer() {
-    // Try geolocation first
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -76,7 +71,6 @@ document.addEventListener("DOMContentLoaded", function () {
       showManualSelect();
     }
 
-    // Setup event listeners
     playPauseBtn.addEventListener("click", togglePlayPause);
     prevBtn.addEventListener("click", playPrevious);
     nextBtn.addEventListener("click", playNext);
@@ -132,15 +126,12 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("weather-condition").textContent =
       weather.condition;
 
-    // Update weather icon
     const weatherType = weather.condition.toLowerCase();
     weatherIconEl.textContent =
       weatherIcons[weatherType] || weatherIcons.neutral;
 
-    // Update background based on weather
     let bgColor1, bgColor2;
     if (weatherType.includes("clear") || weatherType.includes("sun")) {
-      // Sunny/Clear
       bgColor1 = "#FF9A3C"; // Vibrant orange
       bgColor2 = "#FFCC33"; // Warm yellow
     } else if (
@@ -148,14 +139,12 @@ document.addEventListener("DOMContentLoaded", function () {
       weatherType.includes("drizzle") ||
       weatherType.includes("shower")
     ) {
-      // Rain/Drizzle
       bgColor1 = "#3C6CFF"; // Deep blue
       bgColor2 = "#3CC3FF"; // Sky blue
     } else if (
       weatherType.includes("thunder") ||
       weatherType.includes("storm")
     ) {
-      // Thunderstorm
       bgColor1 = "#4A148C"; // Dark purple
       bgColor2 = "#7B1FA2"; // Electric purple
     } else if (
@@ -163,14 +152,12 @@ document.addEventListener("DOMContentLoaded", function () {
       weatherType.includes("flurr") ||
       weatherType.includes("sleet")
     ) {
-      // Snow/Sleet
       bgColor1 = "#3CC3FF"; // Ice blue
       bgColor2 = "#FFFFFF"; // Pure white
     } else if (
       weatherType.includes("cloud") ||
       weatherType.includes("overcast")
     ) {
-      // Cloudy
       bgColor1 = "#7D7D7D"; // Medium gray
       bgColor2 = "#B3B3B3"; // Light gray
     } else if (
@@ -178,30 +165,25 @@ document.addEventListener("DOMContentLoaded", function () {
       weatherType.includes("mist") ||
       weatherType.includes("haze")
     ) {
-      // Fog/Mist
       bgColor1 = "#9E9E9E"; // Soft gray
       bgColor2 = "#E0E0E0"; // Off-white
     } else if (weatherType.includes("sand") || weatherType.includes("dust")) {
-      // Sand/Dust
       bgColor1 = "#FFC107"; // Amber
       bgColor2 = "#FFE082"; // Light amber
     } else if (weatherType.includes("smoke") || weatherType.includes("ash")) {
-      // Smoke/Volcanic Ash
       bgColor1 = "#616161"; // Dark gray
       bgColor2 = "#9E9E9E"; // Medium gray
     } else if (
       weatherType.includes("squall") ||
       weatherType.includes("tornado")
     ) {
-      // Extreme Weather
       bgColor1 = "#D32F2F"; // Dark red
       bgColor2 = "#F44336"; // Bright red
     } else if (weatherType.includes("cold") || weatherType.includes("freez")) {
-      // Freezing Conditions
       bgColor1 = "#00ACC1"; // Cyan
       bgColor2 = "#B2EBF2"; // Light cyan
     } else {
-      // Default (pleasant weather)
+      // Default
       bgColor1 = "#1DB954"; // Spotify green
       bgColor2 = "#1ED760"; // Brighter green
     }
@@ -231,7 +213,6 @@ document.addEventListener("DOMContentLoaded", function () {
     audioPlayer.addEventListener("loadedmetadata", () => {
       durationEl.textContent = formatTime(audioPlayer.duration);
 
-      // Auto-play if user has interacted before
       if (isPlaying) {
         audioPlayer
           .play()
@@ -291,7 +272,6 @@ document.addEventListener("DOMContentLoaded", function () {
   function playPrevious() {
     if (currentSongs.length === 0) return;
 
-    // If song is more than 3 seconds in, restart it
     if (audioPlayer.currentTime > 3) {
       audioPlayer.currentTime = 0;
       return;
